@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Purple Hour Music</title>
+<title>Brian's Music</title>
 <style>
   :root {
     --bg: #05070d;
@@ -14,8 +14,8 @@
     --muted: #8a9bbd;
     --accent: #4da3ff;
     --accent-2: #1f6feb;
-    --danger: #ff6b8a;
     --spotify: #1db954;
+    --danger: #ff6b8a;
   }
   * { box-sizing: border-box; }
   body {
@@ -26,24 +26,26 @@
     color: var(--text);
     min-height: 100vh;
   }
-  .wrap { max-width: 900px; margin: 0 auto; padding: 24px 16px 60px; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 16px 60px; }
   header { text-align: center; margin-bottom: 24px; }
-  header h1 { margin: 0; font-size: 2rem; letter-spacing: .5px; }
+  header h1 { margin: 0; font-size: 2rem; }
   header h1 span { color: var(--accent); }
   header p { margin: 6px 0 0; color: var(--muted); }
 
-  .card {
+  .grid { display: grid; grid-template-columns: 3fr 2fr; gap: 18px; align-items: start; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+
+  .box {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 14px;
     padding: 16px;
-    margin-bottom: 18px;
   }
-  .card h2 { margin: 0 0 12px; font-size: 1.1rem; }
+  .box h2 { margin: 0 0 4px; font-size: 1.15rem; }
+  .box .sub { color: var(--muted); font-size: .9rem; margin-bottom: 12px; }
+  .stack { display: flex; flex-direction: column; gap: 18px; }
 
-  form.add { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  form.add .full { grid-column: 1 / -1; }
-  input, select, textarea {
+  input {
     width: 100%;
     background: var(--panel-2);
     border: 1px solid var(--border);
@@ -52,114 +54,82 @@
     padding: 10px 12px;
     font: inherit;
   }
-  textarea { resize: vertical; min-height: 60px; }
-  input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); border-color: transparent; }
-
+  input:focus { outline: 2px solid var(--accent); border-color: transparent; }
+  form { display: flex; flex-direction: column; gap: 10px; }
   button {
-    font: inherit;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 14px;
-    cursor: pointer;
-    background: var(--accent-2);
-    color: white;
-    font-weight: 600;
+    font: inherit; border: none; border-radius: 8px; padding: 10px 14px;
+    cursor: pointer; background: var(--accent-2); color: white; font-weight: 600;
   }
   button:hover { background: var(--accent); }
-  button.ghost { background: transparent; border: 1px solid var(--border); color: var(--muted); font-weight: 500; }
-  button.ghost:hover { border-color: var(--accent); color: var(--text); }
-  button.danger:hover { border-color: var(--danger); color: var(--danger); }
+  .status { color: var(--muted); font-size: .85rem; min-height: 1.2em; text-align: center; }
 
-  .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
-  .tabs button { flex: 1; background: var(--panel); border: 1px solid var(--border); color: var(--muted); }
-  .tabs button.active { background: var(--accent-2); color: white; border-color: var(--accent-2); }
-  .count { opacity: .8; font-weight: 400; }
-
-  .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-  .filters input { flex: 2; min-width: 180px; }
-  .filters select { flex: 1; min-width: 140px; }
-
-  .song {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 12px;
+  .list { max-height: 70vh; overflow-y: auto; margin-top: 10px; }
+  .row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 6px; border-bottom: 1px solid var(--border);
   }
-  .song-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
-  .song h3 { margin: 0; font-size: 1.05rem; }
-  .song .artist { color: var(--muted); margin-top: 2px; }
-  .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-  .tag { font-size: .78rem; padding: 3px 9px; border-radius: 999px; background: var(--panel-2); border: 1px solid var(--border); color: var(--muted); }
-  .tag.genre { color: var(--accent); border-color: var(--accent-2); }
-  .note { margin: 10px 0 0; color: var(--text); opacity: .9; font-size: .95rem; white-space: pre-wrap; }
-  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-  .actions button, .actions a { padding: 7px 11px; font-size: .88rem; }
-  a.spotify {
-    display: inline-block; text-decoration: none; border-radius: 8px;
-    background: var(--spotify); color: #0b0b0b; font-weight: 700;
+  .row:last-child { border-bottom: none; }
+  .num { color: var(--muted); width: 2.2em; text-align: right; font-size: .85rem; flex-shrink: 0; }
+  .info { flex: 1; min-width: 0; }
+  .title { font-weight: 600; overflow-wrap: anywhere; }
+  .artist { color: var(--muted); font-size: .9rem; overflow-wrap: anywhere; }
+  .from { color: var(--accent); font-size: .8rem; }
+  a.play {
+    flex-shrink: 0; text-decoration: none; background: var(--spotify); color: #06120a;
+    font-weight: 700; font-size: .85rem; padding: 7px 12px; border-radius: 999px;
   }
-  .player { margin-top: 12px; }
-  .player iframe { width: 100%; border: 0; border-radius: 12px; }
-  .empty { text-align: center; color: var(--muted); padding: 30px 10px; }
-  .status { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 8px; min-height: 1.2em; }
-
-  @media (max-width: 600px) {
-    form.add { grid-template-columns: 1fr; }
-    .song-top { flex-direction: column; }
+  a.play:hover { filter: brightness(1.1); }
+  .x {
+    flex-shrink: 0; background: transparent; color: var(--muted); border: 1px solid var(--border);
+    padding: 5px 9px; font-size: .8rem;
   }
+  .x:hover { background: transparent; color: var(--danger); border-color: var(--danger); }
+  .empty { color: var(--muted); text-align: center; padding: 24px 8px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <h1>Purple Hour <span>Music</span></h1>
-    <p>Songs we're putting each other on to</p>
+    <h1>Brian's <span>Music</span></h1>
+    <p>My favorite songs — and a spot to put me on to yours</p>
   </header>
 
-  <section class="card">
-    <h2>Add a song</h2>
-    <form class="add" id="addForm">
-      <input id="title" placeholder="Song title" required>
-      <input id="artist" placeholder="Artist" required>
-      <select id="genre" required>
-        <option value="">Genre…</option>
-      </select>
-      <select id="section">
-        <option value="recommended">Recommended</option>
-        <option value="favorites">Favorites</option>
-      </select>
-      <input id="addedBy" placeholder="From (your name)" required>
-      <input id="spotify" placeholder="Spotify link (optional)">
-      <textarea id="note" class="full" placeholder="Why you like it / when to listen (optional)"></textarea>
-      <button class="full" type="submit">Add song</button>
-    </form>
-    <div class="status" id="status"></div>
-    <button class="ghost" id="importBtn" type="button" style="display:none;width:100%;margin-top:8px"></button>
-  </section>
+  <div class="grid">
+    <section class="box">
+      <h2>My Songs <span class="sub" id="myCount"></span></h2>
+      <input id="search" placeholder="Search by song or singer…">
+      <div class="list" id="myList"></div>
+    </section>
 
-  <div class="tabs">
-    <button data-tab="recommended" class="active">Recommended <span class="count" id="countRec"></span></button>
-    <button data-tab="favorites">Favorites <span class="count" id="countFav"></span></button>
+    <div class="stack">
+      <section class="box">
+        <h2>Recommend me a song</h2>
+        <div class="sub">Paste the Spotify link and I'll check it out</div>
+        <form id="recForm">
+          <input id="recTitle" placeholder="Song title" required>
+          <input id="recArtist" placeholder="Singer" required>
+          <input id="recUrl" placeholder="Spotify link (open.spotify.com/track/…)" required>
+          <input id="recFrom" placeholder="Your name (optional)">
+          <button type="submit">Send it</button>
+        </form>
+        <div class="status" id="status"></div>
+      </section>
+
+      <section class="box">
+        <h2>Recommended to Me <span class="sub" id="recCount"></span></h2>
+        <div class="list" id="recList"><div class="empty">Loading…</div></div>
+      </section>
+    </div>
   </div>
-
-  <div class="filters">
-    <input id="search" placeholder="Search title, artist, or note…">
-    <select id="genreFilter"><option value="">All genres</option></select>
-    <select id="fromFilter"><option value="">From anyone</option></select>
-  </div>
-
-  <div id="list"></div>
 </div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
-    getFirestore, collection, addDoc, onSnapshot, updateDoc,
-    deleteDoc, doc, serverTimestamp, query, orderBy, writeBatch, Timestamp
+    getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc,
+    serverTimestamp, query, orderBy
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ⬇️ Paste the config from your NEW Firebase project here
   const firebaseConfig = {
     apiKey: "AIzaSyCtwRb4ZEl-hhEes70Mv6CVIaLgs7A4Rzo",
     authDomain: "musiclist-54f93.firebaseapp.com",
@@ -169,206 +139,265 @@
     appId: "1:981373067498:web:ab2c50bd12fb5cdc50f793"
   };
 
-  const GENRES = [
-    "Hip-Hop / Rap", "R&B", "Pop", "Rock", "Alternative / Indie", "Metal",
-    "Electronic / EDM", "Latin", "Reggaeton", "Regional Mexicano", "K-Pop",
-    "J-Pop / Anime", "Jazz", "Soul / Funk", "Country", "Lo-fi", "Classical",
-    "Soundtrack", "Other"
+  // My songs: [title, singer, spotify link]. A blank link falls back to a Spotify search for the song.
+  const MY_SONGS = [
+    ["Black Friday", "Tom Odell", "https://open.spotify.com/track/1XTY6rA7XQosc0ynkkE9kN"],
+    ["When I Close My Eyes", "Tom Odell", "https://open.spotify.com/track/2llGNw4clBNOxpcORvUtYF"],
+    ["passenger side", "Marin Clarisse", "https://open.spotify.com/track/0H85rZNrhnlreA25YbzVs1"],
+    ["grace", "Marin Clarisse", "https://open.spotify.com/track/2QHRLBV4pSoaCNeZrUxpi3"],
+    ["PIXELATED KISSES", "Joji", "https://open.spotify.com/track/2OZVskV28xxJjjhQqKTLSg"],
+    ["Me Convertí", "Peso Pluma", "https://open.spotify.com/track/28dxorPKmQwv2KOm7jwtuR"],
+    ["A Little Death", "The Neighbourhood", "https://open.spotify.com/track/0Ot6e3wYVQQ1Us9PM977jE"],
+    ["Let Down", "Radiohead", "https://open.spotify.com/track/2fuYa3Lx06QQJAm0MjztKr"],
+    ["BIPOLAR", "Peso Pluma, Jasiel Nuñez, Junior H", "https://open.spotify.com/track/3wlIAXSDtlD9iU8ysld06Z"],
+    ["daño", "Peso Pluma, Tito Double P", "https://open.spotify.com/track/136BeIIoBGrrU9fI1jbcDR"],
+    ["The Night Begins to Shine", "B.E.R.", "https://open.spotify.com/track/3eX2JOSwcPjVEe2zbVZ2GH"],
+    ["Twist Made Me", "Lil Wayne", "https://open.spotify.com/track/4AZKDSYA1qtpiZQBdXno2j"],
+    ["Sorry 4 The Wait", "Lil Wayne", "https://open.spotify.com/track/524yEMK9wdiqPMqkE9kd9H"],
+    ["K", "Eslabon Armado", "https://open.spotify.com/track/5Qsmx0ffKXwbLTUgeFC2Ce"],
+    ["Que Te Vas", "T3r Elemento", "https://open.spotify.com/track/5YgpBbSqDc50OOVDahLoJZ"],
+    ["Mil Problemas", "Nsqk, Eslabon Armado", "https://open.spotify.com/track/0Wm2AsGxzuVmpRwePxKIfx"],
+    ["Deep", "Peter Sandberg", "https://open.spotify.com/track/7qt641kuazHzMIn4lbkns5"],
+    ["Who Knows", "Daniel Caesar", "https://open.spotify.com/track/6DH13QYXK7lKkYHSU88N48"],
+    ["What If I Call", "Alex Crichton", "https://open.spotify.com/track/3zBdVzYsuqVPyMk1YFiPcg"],
+    ["Doma", "Jósean Log", "https://open.spotify.com/track/58cLm4PaHNt8DDr9ayZnNz"],
+    ["Poster Child", "Khantrast", "https://open.spotify.com/track/6PR7FoMfgzqhRioV0i4nTy"],
+    ["Te Estoy Correteando", "LATIN MAFIA, Fred again..", "https://open.spotify.com/track/5B579RUazOpBcuxjTZWnMs"],
+    ["Herida Abierta", "Ivan Cornejo", "https://open.spotify.com/track/1xvuA42QBl5ssBHvCwHXwK"],
+    ["Ya Te Perdí (Deluxe)", "Ivan Cornejo", "https://open.spotify.com/track/4Nvm7kFymlxLeF5Qd69nuB"],
+    ["Tatuajes (Deluxe)", "Ivan Cornejo", "https://open.spotify.com/track/2b4YJ0j60w3YPIFot0oodu"],
+    ["Me Hiciste un Loco (Deluxe)", "Ivan Cornejo", "https://open.spotify.com/track/0iade05WRF2AsjkRHDXz0v"],
+    ["Aquí Te Espero", "Ivan Cornejo", "https://open.spotify.com/track/33vrRiIiut4rOFmkgorJD6"],
+    ["Mirada", "Ivan Cornejo", "https://open.spotify.com/track/0tXFWZC3ZF44vgi0h2o4iI"],
+    ["Best Part (feat. H.E.R.)", "Daniel Caesar", "https://open.spotify.com/track/1Q7EgiMOuwDcB0PJC6AzON"],
+    ["Reputation", "Stephen Dawes", "https://open.spotify.com/track/5jYSN8FVnE7oJ4Z2avviW6"],
+    ["OJITOS PERSAS", "Eslabon Armado, ERRE", "https://open.spotify.com/track/3Wl5npqIERMVWTF5EySBOA"],
+    ["Otra Noche de Llorar", "Mon Laferte", "https://open.spotify.com/track/4oP6sZWbkC3fJghTsyOgkZ"],
+    ["EN ALTAVOZ", "Grupo Frontera, Junior H", "https://open.spotify.com/track/7GRBoiZ3aXbjIn4rML7GQE"],
+    ["Qué Fuimos", "Banda MS de Sergio Lizárraga", "https://open.spotify.com/track/56OTBUIn4xlmDhtPowlA2d"],
+    ["Carnal", "Grupo RYE", "https://open.spotify.com/track/1u7E4NcKpleq2kxKLyucRL"],
+    ["Stop The Wedding!", "Ashe", "https://open.spotify.com/track/3zOYmiNOuyDL0ClxJcEJ0T"],
+    ["Back Home", "Yeat, Joji", "https://open.spotify.com/track/40oYjPdjvFBCZH1Smsk46H"],
+    ["UNETHICAL", "Faouzia", "https://open.spotify.com/track/6QKpHmO41jkd9pTp0FfmHs"],
+    ["Too Little, Too Late", "Laufey", "https://open.spotify.com/track/6zEg4KEgz6RGhCPmDKplYf"],
+    ["J.", "Ivan Cornejo", "https://open.spotify.com/track/4lUsBLTAiufWocWtg4H0my"],
+    ["Lo Que Siento", "Cuco", "https://open.spotify.com/track/4CYeId6mLAasOb6o0NCz4Y"],
+    ["seasons", "wave to earth", "https://open.spotify.com/track/0aVd7QiY8BstysHb62c5Fi"],
+    ["As It Was", "Harry Styles", "https://open.spotify.com/track/4Dvkj6JhhA12EX05fT7y2e"],
+    ["LUNA", "Peso Pluma, Junior H", "https://open.spotify.com/track/3RA55zrRkyPK8Fd86hrMy8"],
+    ["Coming Up Roses", "Harry Styles", "https://open.spotify.com/track/0QPdjsMOUhwouq1NS3HwfQ"],
+    ["Saturn", "Sleeping At Last", "https://open.spotify.com/track/3tJjZMHLqhD8DaGgdBICnc"],
+    ["Llévame Despacio", "Paulina Goto", "https://open.spotify.com/track/7AGyXre5riTp36tUrLpG3U"],
+    ["love.", "wave to earth", "https://open.spotify.com/track/5mtTAScDytxMMqZj14NmlN"],
+    ["Oceans (feat. Frank Ocean)", "JAŸ-Z", "https://open.spotify.com/track/3VeW0pO2pae144rAX2oXPP"],
+    ["Chasing Cars", "Sleeping At Last", "https://open.spotify.com/track/2d7LPtieXdIYzf7yHPooWd"],
+    ["Turning Page", "Sleeping At Last", "https://open.spotify.com/track/2kfGoV9a5dbSKCNmUWH2ZF"],
+    ["Born to Die", "Lana Del Rey", "https://open.spotify.com/track/487OPlneJNni3NWC8SYqhW"],
+    ["Baptized In Fear", "The Weeknd", "https://open.spotify.com/track/5rzI6Jnlhx8DgVgsOLorfW"],
+    ["Promise", "Laufey", "https://open.spotify.com/track/08PdFBcXzpkn1cWNgmKqhn"],
+    ["En Peligro de Extinción", "La Adictiva", "https://open.spotify.com/track/60WJ1vD6dJaCT5EMQNS5Dx"],
+    ["Let You Break My Heart Again", "Laufey, Philharmonia Orchestra", "https://open.spotify.com/track/709p9UGPAuyImWf1Z3vjRo"],
+    ["drivers license", "Olivia Rodrigo", "https://open.spotify.com/track/5wANPM4fQCJwkGd4rN57mH"],
+    ["Cry", "Cigarettes After Sex", "https://open.spotify.com/track/7mDTvYD2ieE4Q28XFziMfJ"],
+    ["Apocalypse", "Cigarettes After Sex", "https://open.spotify.com/track/1oAwsWBovWRIp7qLMGPIet"],
+    ["cardigan", "Taylor Swift", "https://open.spotify.com/track/4R2kfaDFhslZEMJqAFNpdd"],
+    ["La Boda", "Camilo", "https://open.spotify.com/track/4vj6sWvmBLMhoF8AWQSeHX"],
+    ["The Winner Takes It All", "Meryl Streep", "https://open.spotify.com/track/4uytiW8D73yWQHkg1PzYlB"],
+    ["Me Prometí", "Ivan Cornejo", "https://open.spotify.com/track/5uXL0CN1mQxHJSJRHN44Od"],
+    ["Help", "Big Time Rush", "https://open.spotify.com/track/4xAizs0eSVenKINCriT9IG"],
+    ["Willing and Able", "Noah Kahan", "https://open.spotify.com/track/6pk6E0SZxILzfaAGFngxEs"],
+    ["Orbiter", "Noah Kahan", "https://open.spotify.com/track/4W6yulge3h7FSy0zGFrNKs"],
+    ["back to friends", "sombr", "https://open.spotify.com/track/0FTmksd2dxiE5e3rWyJXs6"],
+    ["MAYBE.", "SIENNA SPIRO", "https://open.spotify.com/track/6yA2GnuThv4oDuEimu4Rmg"],
+    ["Die On This Hill", "SIENNA SPIRO", "https://open.spotify.com/track/2gYTC8DsplN3RNdpdBcCOQ"],
+    ["Great Expectation", "SIENNA SPIRO", "https://open.spotify.com/track/7ujApz6iFP3PmKIDGcaGbe"],
+    ["butterflies.", "Brent Faiyaz", "https://open.spotify.com/track/4jyyma8YdFC4S4llusSFRu"],
+    ["Lo Que Hay X Aquí", "La Receta", "https://open.spotify.com/track/4KYCSg9y5P8BVbtSY3vGGf"],
+    ["oh yeah?", "Steve Lacy", "https://open.spotify.com/track/22NHkFYbgxB2Zirj29Gbp8"],
+    ["Loser", "Tame Impala", "https://open.spotify.com/track/3RmFPuTTAjSQ2pbEd2j9oA"],
+    ["golden hour", "JVKE", "https://open.spotify.com/track/4yNk9iz9WVJikRFle3XEvn"],
+    ["the cure", "Olivia Rodrigo", "https://open.spotify.com/track/77JxSDvDcZVXNptwJOTX3m"],
+    ["Those Eyes", "New West", "https://open.spotify.com/track/50x1Ic8CaXkYNvjmxe3WXy"],
+    ["Perro Abandonado", "Ivan Cornejo", "https://open.spotify.com/track/4ixwxIXEFw0Jf5nY0Leipd"],
+    ["Está Dañada", "Ivan Cornejo", "https://open.spotify.com/track/6G2xXQRSZlEzYsUEb3uvuR"],
+    ["HASTA LA MUERTE", "Eslabon Armado, Ivan Cornejo", "https://open.spotify.com/track/3qAJAUr7yc9bPDx4ESt6ND"],
+    ["Glimpse of Us", "Joji", "https://open.spotify.com/track/3aBGKDiAAvH2H7HLOyQ4US"],
+    ["Creep", "Radiohead", "https://open.spotify.com/track/70LcF31zb1H0PyJoS1Sx1r"],
+    ["The Scientist", "Coldplay", "https://open.spotify.com/track/75JFxkI2RXiU7L9VXzMkle"],
+    ["New Flame (feat. Usher & Rick Ross)", "Chris Brown", "https://open.spotify.com/track/3fBbfrWZUuWWrMQXFISr7N"],
+    ["Sign of the Times", "Harry Styles", "https://open.spotify.com/track/5Ohxk2dO5COHF1krpoPigN"],
+    ["Halo", "Beyoncé", "https://open.spotify.com/track/4JehYebiI9JE8sR8MisGVb"],
+    ["QUÉ DIABLOS HICE (INTERLUDE)", "Eslabon Armado", "https://open.spotify.com/track/7qHPpmIEa0YRnMf1d0XoWj"],
+    ["Amorfoda", "Bad Bunny", "https://open.spotify.com/track/68QcquxCS39cQGTsRrJWIR"],
+    ["Young Girls", "Bruno Mars", "https://open.spotify.com/track/3G5iN5QBqMeXx3uZPy8tgB"],
+    ["Hasta la Raíz", "Natalia Lafourcade", "https://open.spotify.com/track/3lGMtkONrZdJ8kTCg6KIFf"],
+    ["Soy Peor", "Bad Bunny", "https://open.spotify.com/track/1JxhrUWZjuI8AOjDJ1JpMN"],
+    ["Sparks", "Coldplay", "https://open.spotify.com/track/7D0RhFcb3CrfPuTJ0obrod"],
+    ["hope ur ok", "Olivia Rodrigo", "https://open.spotify.com/track/1zejeOnykpCoyVSit6Bwp3"],
+    ["She Used to Be Mine", "Sara Bareilles", "https://open.spotify.com/track/2D4BSm5Z8Hq5zYbSgJwEOh"],
+    ["Oye Mujer", "Raymix", "https://open.spotify.com/track/37kCg5izHEMZ66xGdMVG5L"],
+    ["Secrets (2026 Remastered)", "OneRepublic", "https://open.spotify.com/track/1kmex5eDBvfniYJpmmIizl"],
+    ["Just a Dream", "Nelly", "https://open.spotify.com/track/3ZdJffjzJWFimSQyxgGIxN"],
+    ["SLOW DANCING IN THE DARK", "Joji", "https://open.spotify.com/track/6rY5FAWxCdAGllYEOZMbjW"],
+    ["Holy Grail (feat. Justin Timberlake)", "JAŸ-Z", "https://open.spotify.com/track/37jTPJgwCCmIGMPB45jrPV"],
+    ["The Hills", "The Weeknd", "https://open.spotify.com/track/7fBv7CLKzipRk6EC6TWHOB"],
+    ["El Perdedor (feat. Marco Antonio Solís)", "Enrique Iglesias", "https://open.spotify.com/track/3CObdifmIZWdZn4kPSbMCT"],
+    ["Locked Out of Heaven", "Bruno Mars", "https://open.spotify.com/track/3w3y8KPTfNeOKPiqUTakBh"],
+    ["Hold On, We're Going Home (feat. Majid Jordan)", "Drake", "https://open.spotify.com/track/6jdOi5U5LBzQrc4c1VT983"],
+    ["purple", "Olivia Rodrigo", "https://open.spotify.com/track/4XYCWx98N3h7Y4FtDFmpd5"],
+    ["Vuelve", "Ivan Cornejo", "https://open.spotify.com/track/60fniRXixufxR4HCYjOyp6"],
+    ["AMIGOS CON DERECHOS", "Eslabon Armado, Peso Pluma", "https://open.spotify.com/track/504nbJ2Wj4eLJiN6r0kvC9"],
+    ["Space Bound", "Eminem", "https://open.spotify.com/track/0sHW1jXe6Sou3437gJQNGA"],
+    ["First And Last", "4BOUT", "https://open.spotify.com/track/2R2BBGPapYTsvmGZSjXr0N"],
+    ["My Way", "Frank Sinatra", "https://open.spotify.com/track/3spdoTYpuCpmq19tuD0bOe"],
+    ["Bubalú (feat. Becky G & Prince Royce)", "DJ Luian, Mambo Kingz, Anuel AA", "https://open.spotify.com/track/7dNwJbsT0sg1le5kVugGJb"],
+    ["Que Te Costó", "Yahritza Y Su Esencia", "https://open.spotify.com/track/7yFc9UbTE9D6rSvTur1xRa"],
+    ["How I Get", "Laufey", "https://open.spotify.com/track/1gjrb6iiP6KIrQnDBIqqDi"],
+    ["BELLAKEO", "Peso Pluma, Anitta", "https://open.spotify.com/track/05WVKTdZhlIMX4qqMLuo0f"],
+    ["No Es Mentira (Version Norteña)", "Los Primos Del Este", "https://open.spotify.com/track/5uVcNLmBx5S6qdjY4Dwtdi"],
+    ["PERDIENDO", "Saul Villarreal", "https://open.spotify.com/track/7DRcnlzr7zLxy54YALvwDO"],
+    ["No Te Hagas", "Jory Boy, Bad Bunny", "https://open.spotify.com/track/5hKjEpYrJIJs6uPl7zw6Y6"],
+    ["Mi complemento", "Peint", "https://open.spotify.com/track/3JXP4ZUx1T4OdWDJDC3aKl"],
+    ["ME PORTO BONITO", "Los Gemelos De Sinaloa", "https://open.spotify.com/track/6utwmYBwLhVwxCGsZEfG0i"],
+    ["Dance with the Devil", "Immortal Technique", "https://open.spotify.com/track/4LCzEYKPFcd2FCOmZdVDnM"],
+    ["En Privado", "Xavi, Manuel Turizo", "https://open.spotify.com/track/2SkB7jADnfiWH8qAE9H8cO"],
+    ["Lover Is a Day", "Cuco", "https://open.spotify.com/track/1ucnuV88gFTfR3BalmznDk"],
+    ["It's Time", "Imagine Dragons", "https://open.spotify.com/track/6BtmXhTJMM9sBTHeYYASGz"],
+    ["NO VOY A JUGAR", "Eslabon Armado", "https://open.spotify.com/track/027Ux04z3yNfLRQC6J1Cwf"],
+    ["everything works out in the end (slowed + best part looped)", "core²", "https://open.spotify.com/track/2HAznq9zLjMEQRIdyvKYAd"],
+    ["Apparently", "J. Cole", "https://open.spotify.com/track/5O59s7bCgTFsXDXlWecyQ1"],
+    ["SPEECHLESS", "WESLEYFRANKLIN", "https://open.spotify.com/track/3QG7ScQMjttBGhEQWM3tEf"],
+    ["Se Logró", "Fuerza Regida", "https://open.spotify.com/track/2Uw0BLEO96u70KQSWOc0XZ"],
+    ["ESTADO MENTAL (OUTRO)", "Eslabon Armado", "https://open.spotify.com/track/5LpwRZk3sTPBXah9jX60jB"],
+    ["Whatever You Like", "T.I.", "https://open.spotify.com/track/1IAzD1muglOxOcPbUHs70R"],
+    ["Promise (feat. Usher)", "Romeo Santos", "https://open.spotify.com/track/0jr6tT2vc4cIFPHb6wufG3"],
+    ["Wet Dreamz", "J. Cole", "https://open.spotify.com/track/4tqcoej1zPvwePZCzuAjJd"],
+    ["I Need a Doctor (feat. Eminem & Skylar Grey)", "Dr. Dre", "https://open.spotify.com/track/70ATm56tH7OrQ1zurYssz0"],
+    ["Amor Completo", "Mon Laferte", "https://open.spotify.com/track/00kIWJu9IHiQ6i0qJAU0Z9"],
+    ["Modo DND", "Xavi, Tony Aguirre", "https://open.spotify.com/track/1TEKUj8c5iyRNUUxo9SdSD"],
+    ["Super Bass", "Nicki Minaj", "https://open.spotify.com/track/3hlksXnvbKogFdPbpO9vel"],
+    ["Can't Feel My Face", "The Weeknd", "https://open.spotify.com/track/22VdIZQfgXJea34mQxlt81"],
+    ["Tu Boda", "Oscar Maydon, Fuerza Regida", "https://open.spotify.com/track/1cOboCuWYI2osTOfolMRS6"],
+    ["BABY I'M BACK", "The Kid LAROI", "https://open.spotify.com/track/1KZfsdxhCqX3SJnRjRPJiD"],
+    ["Sale Para Ser Feliz", "Ivan Cornejo", "https://open.spotify.com/track/0reBZSEtwbvqkXoWGtmV0k"],
+    ["Video Games (Remastered)", "Lana Del Rey", "https://open.spotify.com/track/24jvD83UgLmrdGjhWTFslY"],
+    ["Atención", "Ivan Cornejo", "https://open.spotify.com/track/51sN3VDJBVmKJVgp0trc7M"],
+    ["Story of My Life", "One Direction", "https://open.spotify.com/track/4nVBt6MZDDP6tRVdQTgxJg"],
+    ["Like Toy Soldiers", "Eminem", "https://open.spotify.com/track/6CN3e26iQSj1N5lomh0mfO"],
+    ["Drop the World (feat. Eminem)", "Lil Wayne", "https://open.spotify.com/track/3e21cX0CVwzkQXiHz7WUQZ"],
+    ["Happiness", "Rex Orange County", "https://open.spotify.com/track/7aSyG7cskkG3zhfO2JLxq3"],
+    ["Yellow", "Coldplay", "https://open.spotify.com/track/3AJwUDP919kvQ9QcozQPxg"],
+    ["Might Be", "Anderson .Paak", "https://open.spotify.com/track/36HTFhmeEfBsx53fjXn1hl"],
+    ["Forever Star(《偷偷藏不住》电视剧插曲)", "Yi Hao Zhang", "https://open.spotify.com/track/4hZUa0IFUOHhvZhK1YwXHu"],
+    ["RELOJ", "Peso Pluma, Ivan Cornejo", "https://open.spotify.com/track/0z2OZDree1TT98ZQsAe0xN"],
+    ["WILDFLOWER", "Billie Eilish", "https://open.spotify.com/track/3QaPy1KgI7nu9FJEQUgn6h"],
+    ["Mine", "Bazzi", "https://open.spotify.com/track/7uzmGiiJyRfuViKKK3lVmR"],
+    ["Baby Please", "Ivan Cornejo", "https://open.spotify.com/track/71jWljGDgSEpsa1LA5LHSg"],
+    ["No Me Doy por Vencido", "Luis Fonsi", "https://open.spotify.com/track/4lerOTNr2tFWJCAmmhymhi"],
+    ["Stop Crying Your Heart Out", "Oasis", "https://open.spotify.com/track/0SlpFHdk4UHBDzCEoXzy14"],
+    ["FE!N (feat. Playboi Carti)", "Travis Scott", "https://open.spotify.com/track/42VsgItocQwOQC3XWZ8JNA"],
+    ["Rompe La Dompe", "Peso Pluma, Junior H, Oscar Maydon", "https://open.spotify.com/track/2OWv3lRR8PtOVuHWzQNRs2"],
+    ["Goddess", "Laufey", "https://open.spotify.com/track/4R3AU2pjv8ge2siX1fVbZs"],
+    ["MODO DEPRE :(", "Eslabon Armado", "https://open.spotify.com/track/2U27fF38cgWIPsfoMDuYQD"],
+    ["Forever", "Drake, Kanye West, Lil Wayne, Eminem", "https://open.spotify.com/track/5UsLjwBaTHBX4ektWIr4XX"],
+    ["EXCESOS", "Fuerza Regida", "https://open.spotify.com/track/6UtWwuheJr5LLDeVypPNx7"],
+    ["Háblame De Ti", "Banda MS de Sergio Lizárraga", "https://open.spotify.com/track/1O18MtSAMUk7JfAVB8gGzs"],
+    ["After Hours", "The Weeknd", "https://open.spotify.com/track/2p8IUWQDrpjuFltbdgLOag"],
+    ["UNA CERVEZA", "Fuerza Regida, Manuel Turizo", "https://open.spotify.com/track/0lbDzTINTToToBpkrnQT2t"],
+    ["Regalo De Dios", "Julión Álvarez y su Norteño Banda", "https://open.spotify.com/track/51qYdMBxt9mFbtZBzq1Yfi"],
+    ["Tomando Tequila", "Eslabon Armado, JHAYCO", "https://open.spotify.com/track/3yFKnvGcp6DqmXgYR7QW2I"],
+    ["Locura", "Saul Villarreal", "https://open.spotify.com/track/2iRwbh53FsqtCkFrHzGBXF"],
+    ["PATRAS (with Yahritza Y Su Esencia)", "Becky G", "https://open.spotify.com/track/07vIX6wlThl9fY6Zvcm9T9"],
+    ["Otra Noche", "Los Ángeles Azules, NICKI NICOLE", "https://open.spotify.com/track/4GuaVybbiTGyAVrersVobN"],
+    ["La Difícil", "Bad Bunny", "https://open.spotify.com/track/6NfrH0ANGmgBXyxgV2PeXt"],
+    ["Edge of the Dark", "Armon Jay", "https://open.spotify.com/track/58DXa8Mx3rDCRtH9Kfcsdz"],
+    ["Back in Blood (feat. Lil Durk)", "Pooh Shiesty", "https://open.spotify.com/track/7JuHVG3qQKQKxC4doneXVW"]
   ];
 
-  // Brian's "Favorite Songs" Apple Music playlist (duplicates removed) — [title, artist]
-  const STARTER_SONGS = [["Black Friday","Tom Odell"],["When I Close My Eyes","Tom Odell"],["passenger side","Marin Clarisse"],["grace","Marin Clarisse"],["PIXELATED KISSES","Joji"],["Me Convertí","Peso Pluma"],["A Little Death","The Neighbourhood"],["Let Down","Radiohead"],["BIPOLAR","Peso Pluma, Jasiel Nuñez, Junior H"],["daño","Peso Pluma, Tito Double P"],["The Night Begins to Shine","B.E.R."],["Twist Made Me","Lil Wayne"],["Sorry 4 The Wait","Lil Wayne"],["K","Eslabon Armado"],["Que Te Vas","T3r Elemento"],["Mil Problemas","Nsqk, Eslabon Armado"],["Deep","Peter Sandberg"],["Who Knows","Daniel Caesar"],["What If I Call","Alex Crichton"],["Doma","Jósean Log"],["Poster Child","Khantrast"],["Te Estoy Correteando","LATIN MAFIA, Fred again.."],["Herida Abierta","Ivan Cornejo"],["Ya Te Perdí (Deluxe)","Ivan Cornejo"],["Tatuajes (Deluxe)","Ivan Cornejo"],["Me Hiciste un Loco (Deluxe)","Ivan Cornejo"],["Aquí Te Espero","Ivan Cornejo"],["Mirada","Ivan Cornejo"],["Best Part (feat. H.E.R.)","Daniel Caesar"],["Reputation","Stephen Dawes"],["OJITOS PERSAS","Eslabon Armado, ERRE"],["Otra Noche de Llorar","Mon Laferte"],["EN ALTAVOZ","Grupo Frontera, Junior H"],["Qué Fuimos","Banda MS de Sergio Lizárraga"],["Carnal","Grupo RYE"],["Stop The Wedding!","Ashe"],["Back Home","Yeat, Joji"],["UNETHICAL","Faouzia"],["Too Little, Too Late","Laufey"],["J.","Ivan Cornejo"],["Lo Que Siento","Cuco"],["seasons","wave to earth"],["As It Was","Harry Styles"],["LUNA","Peso Pluma, Junior H"],["Coming Up Roses","Harry Styles"],["Saturn","Sleeping At Last"],["Llévame Despacio","Paulina Goto"],["love.","wave to earth"],["Oceans (feat. Frank Ocean)","JAŸ-Z"],["Chasing Cars","Sleeping At Last"],["Turning Page","Sleeping At Last"],["Born to Die","Lana Del Rey"],["Baptized In Fear","The Weeknd"],["Promise","Laufey"],["En Peligro de Extinción","La Adictiva"],["Let You Break My Heart Again","Laufey, Philharmonia Orchestra"],["drivers license","Olivia Rodrigo"],["Cry","Cigarettes After Sex"],["Apocalypse","Cigarettes After Sex"],["cardigan","Taylor Swift"],["La Boda","Camilo"],["The Winner Takes It All","Meryl Streep"],["Me Prometí","Ivan Cornejo"],["Help","Big Time Rush"],["Willing and Able","Noah Kahan"],["Orbiter","Noah Kahan"],["back to friends","sombr"],["MAYBE.","SIENNA SPIRO"],["Die On This Hill","SIENNA SPIRO"],["Great Expectation","SIENNA SPIRO"],["butterflies.","Brent Faiyaz"],["Lo Que Hay X Aquí","La Receta"],["oh yeah?","Steve Lacy"],["Loser","Tame Impala"],["golden hour","JVKE"],["the cure","Olivia Rodrigo"],["Those Eyes","New West"],["Perro Abandonado","Ivan Cornejo"],["Está Dañada","Ivan Cornejo"],["HASTA LA MUERTE","Eslabon Armado, Ivan Cornejo"],["Glimpse of Us","Joji"],["Creep","Radiohead"],["The Scientist","Coldplay"],["New Flame (feat. Usher & Rick Ross)","Chris Brown"],["Sign of the Times","Harry Styles"],["Halo","Beyoncé"],["QUÉ DIABLOS HICE (INTERLUDE)","Eslabon Armado"],["Amorfoda","Bad Bunny"],["Young Girls","Bruno Mars"],["Hasta la Raíz","Natalia Lafourcade"],["Soy Peor","Bad Bunny"],["Sparks","Coldplay"],["hope ur ok","Olivia Rodrigo"],["She Used to Be Mine","Sara Bareilles"],["Oye Mujer","Raymix"],["Secrets (2026 Remastered)","OneRepublic"],["Just a Dream","Nelly"],["SLOW DANCING IN THE DARK","Joji"],["Holy Grail (feat. Justin Timberlake)","JAŸ-Z"],["The Hills","The Weeknd"],["El Perdedor (feat. Marco Antonio Solís)","Enrique Iglesias"],["Locked Out of Heaven","Bruno Mars"],["Hold On, We're Going Home (feat. Majid Jordan)","Drake"],["purple","Olivia Rodrigo"],["Vuelve","Ivan Cornejo"],["AMIGOS CON DERECHOS","Eslabon Armado, Peso Pluma"],["Space Bound","Eminem"],["First And Last","4BOUT"],["My Way","Frank Sinatra"],["Bubalú (feat. Becky G & Prince Royce)","DJ Luian, Mambo Kingz, Anuel AA"],["Que Te Costó","Yahritza Y Su Esencia"],["How I Get","Laufey"],["BELLAKEO","Peso Pluma, Anitta"],["No Es Mentira (Version Norteña)","Los Primos Del Este"],["PERDIENDO","Saul Villarreal"],["No Te Hagas","Jory Boy, Bad Bunny"],["Mi complemento","Peint"],["ME PORTO BONITO","Los Gemelos De Sinaloa"],["Dance with the Devil","Immortal Technique"],["En Privado","Xavi, Manuel Turizo"],["Lover Is a Day","Cuco"],["It's Time","Imagine Dragons"],["NO VOY A JUGAR","Eslabon Armado"],["everything works out in the end (slowed + best part looped)","core²"],["Apparently","J. Cole"],["SPEECHLESS","WESLEYFRANKLIN"],["Se Logró","Fuerza Regida"],["ESTADO MENTAL (OUTRO)","Eslabon Armado"],["Whatever You Like","T.I."],["Promise (feat. Usher)","Romeo Santos"],["Wet Dreamz","J. Cole"],["I Need a Doctor (feat. Eminem & Skylar Grey)","Dr. Dre"],["Amor Completo","Mon Laferte"],["Modo DND","Xavi, Tony Aguirre"],["Super Bass","Nicki Minaj"],["Can't Feel My Face","The Weeknd"],["Tu Boda","Oscar Maydon, Fuerza Regida"],["BABY I'M BACK","The Kid LAROI"],["Sale Para Ser Feliz","Ivan Cornejo"],["Video Games (Remastered)","Lana Del Rey"],["Atención","Ivan Cornejo"],["Story of My Life","One Direction"],["Like Toy Soldiers","Eminem"],["Drop the World (feat. Eminem)","Lil Wayne"],["Happiness","Rex Orange County"],["Yellow","Coldplay"],["Might Be","Anderson .Paak"],["Forever Star(《偷偷藏不住》电视剧插曲)","Yi Hao Zhang"],["RELOJ","Peso Pluma, Ivan Cornejo"],["WILDFLOWER","Billie Eilish"],["Mine","Bazzi"],["Baby Please","Ivan Cornejo"],["No Me Doy por Vencido","Luis Fonsi"],["Stop Crying Your Heart Out","Oasis"],["FE!N (feat. Playboi Carti)","Travis Scott"],["Rompe La Dompe","Peso Pluma, Junior H, Oscar Maydon"],["Goddess","Laufey"],["MODO DEPRE :(","Eslabon Armado"],["Forever","Drake, Kanye West, Lil Wayne, Eminem"],["EXCESOS","Fuerza Regida"],["Háblame De Ti","Banda MS de Sergio Lizárraga"],["After Hours","The Weeknd"],["UNA CERVEZA","Fuerza Regida, Manuel Turizo"],["Regalo De Dios","Julión Álvarez y su Norteño Banda"],["Tomando Tequila","Eslabon Armado, JHAYCO"],["Locura","Saul Villarreal"],["PATRAS (with Yahritza Y Su Esencia)","Becky G"],["Otra Noche","Los Ángeles Azules, NICKI NICOLE"],["La Difícil","Bad Bunny"],["Edge of the Dark","Armon Jay"],["Back in Blood (feat. Lil Durk)","Pooh Shiesty"]];
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const songsRef = collection(db, "songs");
-
   const $ = id => document.getElementById(id);
-  let songs = [];
-  let currentTab = "recommended";
-  const openPlayers = new Set();
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+  const spotifyFor = (title, artist, url) =>
+    url || `https://open.spotify.com/search/${encodeURIComponent(title + " " + artist)}`;
 
-  // Fill genre dropdowns
-  for (const g of GENRES) {
-    $("genre").append(new Option(g, g));
-    $("genreFilter").append(new Option(g, g));
+  // ---- My Songs (built into the page) ----
+  function renderMine() {
+    const q = $("search").value.trim().toLowerCase();
+    const rows = MY_SONGS
+      .map((s, i) => ({ title: s[0], artist: s[1], url: s[2] || "", n: i + 1 }))
+      .filter(s => !q || (s.title + " " + s.artist).toLowerCase().includes(q));
+    $("myCount").textContent = `(${MY_SONGS.length})`;
+    $("myList").innerHTML = rows.length ? rows.map(s => `
+      <div class="row">
+        <div class="num">${s.n}</div>
+        <div class="info">
+          <div class="title">${esc(s.title)}</div>
+          <div class="artist">${esc(s.artist)}</div>
+        </div>
+        <a class="play" href="${esc(spotifyFor(s.title, s.artist, s.url))}" target="_blank" rel="noopener">▶ Spotify</a>
+      </div>`).join("") : `<div class="empty">No songs match that.</div>`;
   }
+  $("search").addEventListener("input", renderMine);
+  renderMine();
 
-  // Remember your name on this device
-  try { $("addedBy").value = localStorage.getItem("ph_music_name") || ""; } catch {}
+  // ---- Recommended to Me (shared through Firebase) ----
+  const db = getFirestore(initializeApp(firebaseConfig));
+  const recRef = collection(db, "recommendations");
 
   function setStatus(msg) {
     $("status").textContent = msg;
-    if (msg) setTimeout(() => { if ($("status").textContent === msg) $("status").textContent = ""; }, 3000);
+    setTimeout(() => { if ($("status").textContent === msg) $("status").textContent = ""; }, 3500);
   }
 
-  // Turns a Spotify link into an embeddable player URL
-  function spotifyEmbed(url) {
-    const m = (url || "").match(/open\.spotify\.com\/(?:intl-[a-z]+\/)?(track|album|playlist|episode)\/([A-Za-z0-9]+)/);
-    return m ? `https://open.spotify.com/embed/${m[1]}/${m[2]}` : null;
-  }
-
-  function esc(s) {
-    return String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-  }
-
-  $("addForm").addEventListener("submit", async e => {
+  $("recForm").addEventListener("submit", async e => {
     e.preventDefault();
-    const spotify = $("spotify").value.trim();
-    if (spotify && !spotifyEmbed(spotify)) {
-      setStatus("That doesn't look like a Spotify link — try Share → Copy link in Spotify.");
+    const url = $("recUrl").value.trim();
+    if (!/^https:\/\/(open\.spotify\.com|spotify\.link)\//.test(url)) {
+      setStatus("Paste a Spotify link — in Spotify tap Share → Copy link.");
       return;
     }
-    const addedBy = $("addedBy").value.trim();
-    try { localStorage.setItem("ph_music_name", addedBy); } catch {}
-
     try {
-      await addDoc(songsRef, {
-        title: $("title").value.trim(),
-        artist: $("artist").value.trim(),
-        genre: $("genre").value,
-        section: $("section").value,
-        addedBy,
-        spotify,
-        note: $("note").value.trim(),
+      await addDoc(recRef, {
+        title: $("recTitle").value.trim(),
+        artist: $("recArtist").value.trim(),
+        url,
+        from: $("recFrom").value.trim(),
         createdAt: serverTimestamp()
       });
-      ["title", "artist", "spotify", "note"].forEach(id => $(id).value = "");
-      $("genre").value = "";
-      setStatus("Added 🎵");
+      ["recTitle", "recArtist", "recUrl"].forEach(id => $(id).value = "");
+      setStatus("Sent! 🎶");
     } catch (err) {
       console.error(err);
-      setStatus("Couldn't save — check your Firebase config and rules.");
+      setStatus("Couldn't send — try again in a sec.");
     }
   });
 
-  document.querySelectorAll(".tabs button").forEach(btn => {
-    btn.addEventListener("click", () => {
-      currentTab = btn.dataset.tab;
-      document.querySelectorAll(".tabs button").forEach(b => b.classList.toggle("active", b === btn));
-      render();
-    });
+  let recs = [];
+  function renderRecs() {
+    $("recCount").textContent = `(${recs.length})`;
+    $("recList").innerHTML = recs.length ? recs.map(r => `
+      <div class="row">
+        <div class="info">
+          <div class="title">${esc(r.title)}</div>
+          <div class="artist">${esc(r.artist)}</div>
+          ${r.from ? `<div class="from">from ${esc(r.from)}</div>` : ""}
+        </div>
+        <a class="play" href="${esc(r.url)}" target="_blank" rel="noopener">▶ Spotify</a>
+        <button class="x" data-id="${r.id}" title="Remove">✕</button>
+      </div>`).join("") : `<div class="empty">No recommendations yet.</div>`;
+  }
+  $("recList").addEventListener("click", async e => {
+    const b = e.target.closest("button.x");
+    if (!b) return;
+    const r = recs.find(x => x.id === b.dataset.id);
+    if (r && confirm(`Remove "${r.title}"?`)) await deleteDoc(doc(db, "recommendations", r.id));
   });
 
-  ["search", "genreFilter", "fromFilter"].forEach(id => $(id).addEventListener("input", render));
-
-  $("list").addEventListener("click", async e => {
-    const btn = e.target.closest("button[data-action]");
-    if (!btn) return;
-    const id = btn.dataset.id;
-    const song = songs.find(s => s.id === id);
-    if (!song) return;
-
-    if (btn.dataset.action === "move") {
-      const to = song.section === "favorites" ? "recommended" : "favorites";
-      await updateDoc(doc(db, "songs", id), { section: to });
-    } else if (btn.dataset.action === "delete") {
-      if (confirm(`Remove "${song.title}" by ${song.artist}?`)) await deleteDoc(doc(db, "songs", id));
-    } else if (btn.dataset.action === "play") {
-      openPlayers.has(id) ? openPlayers.delete(id) : openPlayers.add(id);
-      render();
-    }
-  });
-
-  // One-click import of the Apple Music favorites — skips anything already on the list
-  const songKey = (t, a) => (t + "|" + a).toLowerCase();
-  function missingStarters() {
-    const have = new Set(songs.map(s => songKey(s.title, s.artist)));
-    return STARTER_SONGS.filter(([t, a]) => !have.has(songKey(t, a)));
-  }
-  function refreshImportBtn() {
-    const n = missingStarters().length;
-    $("importBtn").style.display = n ? "block" : "none";
-    $("importBtn").textContent = `⤓ Import Brian's Apple Music favorites (${n} songs)`;
-  }
-  $("importBtn").addEventListener("click", async () => {
-    const todo = missingStarters();
-    if (!todo.length || !confirm(`Add ${todo.length} songs to Favorites?`)) return;
-    $("importBtn").disabled = true;
-    try {
-      const batch = writeBatch(db);
-      const now = Date.now();
-      todo.forEach(([title, artist], i) => {
-        batch.set(doc(songsRef), {
-          title, artist, genre: "", section: "favorites", addedBy: "Brian",
-          spotify: "", note: "",
-          createdAt: Timestamp.fromMillis(now - i) // keeps playlist order
-        });
-      });
-      await batch.commit();
-      setStatus(`Imported ${todo.length} songs 🎶`);
-    } catch (err) {
-      console.error(err);
-      setStatus("Import failed — check your Firestore rules.");
-    }
-    $("importBtn").disabled = false;
-  });
-
-  function refreshFromFilter() {
-    const sel = $("fromFilter");
-    const current = sel.value;
-    const names = [...new Set(songs.map(s => s.addedBy).filter(Boolean))].sort();
-    sel.innerHTML = '<option value="">From anyone</option>';
-    names.forEach(n => sel.append(new Option(n, n)));
-    sel.value = names.includes(current) ? current : "";
-  }
-
-  function render() {
-    const q = $("search").value.trim().toLowerCase();
-    const genre = $("genreFilter").value;
-    const from = $("fromFilter").value;
-
-    $("countRec").textContent = `(${songs.filter(s => s.section === "recommended").length})`;
-    $("countFav").textContent = `(${songs.filter(s => s.section === "favorites").length})`;
-
-    const shown = songs.filter(s =>
-      s.section === currentTab &&
-      (!genre || s.genre === genre) &&
-      (!from || s.addedBy === from) &&
-      (!q || [s.title, s.artist, s.note].join(" ").toLowerCase().includes(q))
-    );
-
-    if (!shown.length) {
-      $("list").innerHTML = `<div class="empty">${songs.length ? "Nothing matches here yet." : "No songs yet — add the first one!"}</div>`;
-      return;
-    }
-
-    $("list").innerHTML = shown.map(s => {
-      const embed = spotifyEmbed(s.spotify);
-      const moveLabel = s.section === "favorites" ? "↩ Move to Recommended" : "★ Move to Favorites";
-      return `
-        <article class="song">
-          <div class="song-top">
-            <div>
-              <h3>${esc(s.title)}</h3>
-              <div class="artist">${esc(s.artist)}</div>
-            </div>
-          </div>
-          <div class="tags">
-            ${s.genre ? `<span class="tag genre">${esc(s.genre)}</span>` : ""}
-            ${s.addedBy ? `<span class="tag">from ${esc(s.addedBy)}</span>` : ""}
-          </div>
-          ${s.note ? `<p class="note">${esc(s.note)}</p>` : ""}
-          <div class="actions">
-            ${embed ? `<button class="ghost" data-action="play" data-id="${s.id}">${openPlayers.has(s.id) ? "Hide player" : "▶ Play here"}</button>
-                       <a class="spotify" href="${esc(s.spotify)}" target="_blank" rel="noopener">Open in Spotify</a>`
-                   : `<a class="spotify" href="https://open.spotify.com/search/${encodeURIComponent(s.title + " " + s.artist)}" target="_blank" rel="noopener">Find on Spotify</a>`}
-            <button class="ghost" data-action="move" data-id="${s.id}">${moveLabel}</button>
-            <button class="ghost danger" data-action="delete" data-id="${s.id}">Delete</button>
-          </div>
-          ${embed && openPlayers.has(s.id) ? `<div class="player"><iframe src="${embed}" height="152" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>` : ""}
-        </article>`;
-    }).join("");
-  }
-
-  onSnapshot(query(songsRef, orderBy("createdAt", "desc")), snap => {
-    songs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    refreshFromFilter();
-    refreshImportBtn();
-    render();
+  onSnapshot(query(recRef, orderBy("createdAt", "desc")), snap => {
+    recs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderRecs();
   }, err => {
     console.error(err);
-    $("list").innerHTML = `<div class="empty">Couldn't load songs — check your Firebase config and Firestore rules.</div>`;
+    $("recList").innerHTML = `<div class="empty">Couldn't load — check the Firestore rules.</div>`;
   });
 </script>
 </body>
