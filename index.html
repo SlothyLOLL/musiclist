@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Brian's Music</title>
+<title>Brian's Favorite Songs</title>
 <style>
   :root {
     --bg: #05070d;
@@ -90,8 +90,7 @@
 <body>
 <div class="wrap">
   <header>
-    <h1>Brian's <span>Music</span></h1>
-    <p>My favorite songs — and a spot to put me on to yours</p>
+    <h1>Brian's <span>Favorite Songs</span></h1>
   </header>
 
   <div class="grid">
@@ -104,13 +103,11 @@
     <div class="stack">
       <section class="box">
         <h2>Recommend me a song</h2>
-        <div class="sub">Paste the Spotify link and I'll check it out</div>
+        <div class="sub">Tell me a song and I'll check it out</div>
         <form id="recForm">
-          <input id="recTitle" placeholder="Song title" required>
+          <input id="recTitle" placeholder="Song" required>
           <input id="recArtist" placeholder="Singer" required>
-          <input id="recUrl" placeholder="Spotify link (open.spotify.com/track/…)" required>
-          <input id="recFrom" placeholder="Your name (optional)">
-          <button type="submit">Send it</button>
+          <button type="submit">Submit</button>
         </form>
         <div class="status" id="status"></div>
       </section>
@@ -350,20 +347,13 @@
 
   $("recForm").addEventListener("submit", async e => {
     e.preventDefault();
-    const url = $("recUrl").value.trim();
-    if (!/^https:\/\/(open\.spotify\.com|spotify\.link)\//.test(url)) {
-      setStatus("Paste a Spotify link — in Spotify tap Share → Copy link.");
-      return;
-    }
     try {
       await addDoc(recRef, {
         title: $("recTitle").value.trim(),
         artist: $("recArtist").value.trim(),
-        url,
-        from: $("recFrom").value.trim(),
         createdAt: serverTimestamp()
       });
-      ["recTitle", "recArtist", "recUrl"].forEach(id => $(id).value = "");
+      ["recTitle", "recArtist"].forEach(id => $(id).value = "");
       setStatus("Sent! 🎶");
     } catch (err) {
       console.error(err);
@@ -381,7 +371,7 @@
           <div class="artist">${esc(r.artist)}</div>
           ${r.from ? `<div class="from">from ${esc(r.from)}</div>` : ""}
         </div>
-        <a class="play" href="${esc(r.url)}" target="_blank" rel="noopener">▶ Spotify</a>
+        <a class="play" href="${esc(spotifyFor(r.title, r.artist, r.url))}" target="_blank" rel="noopener">▶ Spotify</a>
         <button class="x" data-id="${r.id}" title="Remove">✕</button>
       </div>`).join("") : `<div class="empty">No recommendations yet.</div>`;
   }
